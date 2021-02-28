@@ -276,7 +276,7 @@ export const SellNFT = () => {
 
   return (
     <ActionButton size="large" onClick={doSellNFT} style={{ marginLeft: 20 }}>
-      Sell NFT
+      Sell NFT for 5 USDC
     </ActionButton>
   );
 };
