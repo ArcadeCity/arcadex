@@ -256,6 +256,7 @@ function MinterPageInternal() {
                 <a
                   href={`https://explorer.solana.com/address/${order.openOrdersAddress.toString()}`}
                   target="_blank"
+                  rel="noopener noreferrer"
                 >
                   {`Found an order to ${order.side} ${order.size} NFT for ${order.price} USDC.`}
                 </a>
