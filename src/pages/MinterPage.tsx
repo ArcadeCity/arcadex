@@ -16,6 +16,8 @@ import { Event } from '@project-serum/serum/lib/queue';
 import { Order } from '@project-serum/serum/lib/market';
 import { SellNFT } from '../components/SellNFT';
 import { MarketProvider } from '../utils/markets';
+import UserInfoTable from '../components/UserInfoTable';
+import OrderbookComponent from '../components/Orderbook';
 
 const key =
   process.env.NODE_ENV === 'production' ? undefined : require('./KEY').default;
@@ -45,7 +47,12 @@ function MinterPageInternal() {
   const { wallet } = useWallet();
   const { market, setMarketAddress } = useMarket();
   const { customMarkets, setCustomMarkets } = useCustomMarkets();
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [ownerOrders, setOwnerOrders] = useState<Order[]>([]);
+  const [asks, setAsks] = useState<Orderbook>();
+  console.log(ownerOrders, asks);
+
+  const onPrice = () => {};
+  const onSize = () => {};
 
   useEffect(() => {
     console.log('minter page sees customMarkets', customMarkets);
@@ -75,6 +82,7 @@ function MinterPageInternal() {
 
     const asks: Orderbook = await market.loadAsks(connection);
     console.log('Asks:', asks);
+    setAsks(asks);
 
     const bids: Orderbook = await market.loadBids(connection);
     console.log('Bids:', bids);
@@ -85,11 +93,11 @@ function MinterPageInternal() {
     const fills: any[] = await market.loadFills(connection);
     console.log('Fills:', fills);
 
-    const orders: Order[] =
+    const ownerOrders: Order[] =
       wallet.publicKey &&
       (await market.loadOrdersForOwner(connection, wallet.publicKey));
-    console.log('Owner orders:', orders);
-    setOrders(orders);
+    console.log('Owner orders:', ownerOrders);
+    setOwnerOrders(ownerOrders);
 
     const requests: any[] = await market.loadRequestQueue(connection);
     console.log('Requests:', requests);
@@ -249,9 +257,12 @@ function MinterPageInternal() {
             Set current market
           </ActionButton>
           {market && <SellNFT />}
-          <p style={{ marginTop: 20 }}>YOUR ORDERS</p>
-          {orders &&
-            orders.map((order) => (
+          {/* <p style={{ marginTop: 20 }}>OPEN SALES</p>
+          {asks && JSON.stringify(asks)} */}
+
+          {/* <p style={{ marginTop: 20 }}>YOUR ORDERS</p>
+          {ownerOrders &&
+            ownerOrders.map((order) => (
               <div key={order.orderId.toString()}>
                 <a
                   href={`https://explorer.solana.com/address/${order.openOrdersAddress.toString()}`}
@@ -261,7 +272,15 @@ function MinterPageInternal() {
                   {`Found an order to ${order.side} ${order.size} NFT for ${order.price} USDC.`}
                 </a>
               </div>
-            ))}
+            ))} */}
+
+          <OrderbookComponent
+            smallScreen={false}
+            onPrice={onPrice}
+            onSize={onSize}
+          />
+
+          <UserInfoTable />
         </TabPane>
       </Tabs>
     </FloatingElement>
