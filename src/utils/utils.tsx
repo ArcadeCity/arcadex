@@ -73,7 +73,7 @@ export function useLocalStorageStringState(
   key: string,
   defaultState: string | null = null,
 ): [string | null, (newState: string | null) => void] {
-  const state = localStorage.getItem('123' + key) || defaultState;
+  const state = localStorage.getItem('154' + key) || defaultState;
 
   const [, notify] = useState(key + '\n' + state);
 

@@ -496,6 +496,7 @@ export async function listMarket({
   const quoteVault = new Account();
   const feeRateBps = 0;
   const quoteDustThreshold = new BN(100);
+  console.log('');
 
   async function getVaultOwnerAndNonce() {
     const nonce = new BN(0);
@@ -599,6 +600,8 @@ export async function listMarket({
     }),
   );
 
+  console.log('tx1 and tx2', tx1, tx2);
+
   const signedTransactions = await signTransactions({
     transactionsAndSigners: [
       { transaction: tx1, signers: [baseVault, quoteVault] },
@@ -610,11 +613,15 @@ export async function listMarket({
     wallet,
     connection,
   });
+  console.log('signedTransactions', signedTransactions);
   for (let signedTransaction of signedTransactions) {
+    console.log('now sending', signedTransaction);
     await sendSignedTransaction({
       signedTransaction,
       connection,
     });
+    console.log('thats done, sleeping for 2');
+    await sleep(2000);
   }
 
   return market.publicKey;

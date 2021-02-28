@@ -5,9 +5,9 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  // <React.StrictMode> -- avoiding hairy console error from thirdparty library
+  <App />,
+  // </React.StrictMode>,
   document.getElementById('root'),
 );
 
