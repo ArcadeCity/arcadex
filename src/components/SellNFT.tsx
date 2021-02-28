@@ -251,10 +251,32 @@ export const SellNFT = () => {
   //   }
   // }
 
+  const doBuyNFT = async () => {
+    if (!market) return;
+    const theorder: any = {
+      side: 'buy',
+      price: price ?? 5,
+      size: baseSize ?? 1,
+      orderType: ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit',
+      market,
+      connection: sendConnection,
+      wallet,
+      baseCurrencyAccount: baseCurrencyAccount?.pubkey,
+      quoteCurrencyAccount: quoteCurrencyAccount?.pubkey,
+      feeDiscountPubkey: undefined, // feeDiscountKey,
+    };
+    console.log('Placing order to buy NFT...', theorder);
+    try {
+      await placeOrder(theorder);
+    } catch (e) {
+      console.log('Error:', e);
+    }
+  };
+
   const doSellNFT = async () => {
     if (!market) return;
     const theorder: any = {
-      side,
+      side: 'sell',
       price: price ?? 5,
       size: baseSize ?? 1,
       orderType: ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit',
@@ -274,8 +296,13 @@ export const SellNFT = () => {
   };
 
   return (
-    <ActionButton size="large" onClick={doSellNFT} style={{ marginLeft: 20 }}>
-      Sell NFT for 5 USDC
-    </ActionButton>
+    <>
+      <ActionButton size="large" onClick={doBuyNFT} style={{ marginLeft: 20 }}>
+        Buy NFT for 5 USDC
+      </ActionButton>
+      <ActionButton size="large" onClick={doSellNFT} style={{ marginLeft: 20 }}>
+        Sell NFT for 5 USDC
+      </ActionButton>
+    </>
   );
 };
