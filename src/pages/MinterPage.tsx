@@ -49,6 +49,7 @@ function MinterPageInternal() {
   const { customMarkets, setCustomMarkets } = useCustomMarkets();
   const [ownerOrders, setOwnerOrders] = useState<Order[]>([]);
   const [asks, setAsks] = useState<Orderbook>();
+  console.log(ownerOrders, asks);
 
   const onPrice = () => {};
   const onSize = () => {};
