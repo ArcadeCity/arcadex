@@ -4,7 +4,7 @@ import { Button, Tabs } from 'antd';
 import { notify } from '../utils/notifications';
 import { Account, PublicKey } from '@solana/web3.js';
 import { Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { Market, MARKETS, Orderbook } from '@project-serum/serum';
+import { MARKETS, Orderbook } from '@project-serum/serum';
 import FloatingElement from '../components/layout/FloatingElement';
 import { useConnection } from '../utils/connection';
 import { useWallet } from '../utils/wallet';
@@ -13,7 +13,7 @@ import { listMarket } from '../utils/send';
 import { CustomMarketInfo, MarketInfo } from '../utils/types';
 import { getMarketInfos, useCustomMarkets, useMarket } from '../utils/markets';
 import { Event } from '@project-serum/serum/lib/queue';
-import { Order, OrderParams } from '@project-serum/serum/lib/market';
+import { Order } from '@project-serum/serum/lib/market';
 import { SellNFT } from '../components/SellNFT';
 import { MarketProvider } from '../utils/markets';
 
@@ -45,8 +45,6 @@ function MinterPageInternal() {
   const { wallet } = useWallet();
   const { market, setMarketAddress } = useMarket();
   const { customMarkets, setCustomMarkets } = useCustomMarkets();
-  const [thisMarket, setThisMarket] = useState<Market>();
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     console.log('minter page sees customMarkets', customMarkets);
@@ -94,7 +92,6 @@ function MinterPageInternal() {
     const requests: any[] = await market.loadRequestQueue(connection);
     console.log('Requests:', requests);
 
-    setLoaded(true);
     // setMarketAddress('3GhEPcAb17nDxuYVSdRaT2JbBNHmSioqPoStPbpZvnyj');
   }, [connection, market, wallet.publicKey]);
 
