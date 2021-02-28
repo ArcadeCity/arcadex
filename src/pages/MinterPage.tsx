@@ -11,9 +11,11 @@ import { useWallet } from '../utils/wallet';
 import { sleep } from '../utils/utils';
 import { listMarket } from '../utils/send';
 import { CustomMarketInfo, MarketInfo } from '../utils/types';
-import { useCustomMarkets } from '../utils/markets';
+import { getMarketInfos, useCustomMarkets, useMarket } from '../utils/markets';
 import { Event } from '@project-serum/serum/lib/queue';
-import { Order } from '@project-serum/serum/lib/market';
+import { Order, OrderParams } from '@project-serum/serum/lib/market';
+import { SellNFT } from '../components/SellNFT';
+import { MarketProvider } from '../utils/markets';
 
 const key =
   process.env.NODE_ENV === 'production' ? undefined : require('./KEY').default;
@@ -27,44 +29,78 @@ const ActionButton = styled(Button)`
 `;
 
 export default function MinterPage() {
+  const [marketAddress, setMarketAddress] = useState();
+  return (
+    <MarketProvider
+      marketAddress={marketAddress}
+      setMarketAddress={setMarketAddress}
+    >
+      <MinterPageInternal />
+    </MarketProvider>
+  );
+}
+
+function MinterPageInternal() {
   const connection = useConnection();
   const { wallet } = useWallet();
-  const { setCustomMarkets } = useCustomMarkets();
+  const { market, setMarketAddress } = useMarket();
+  const { customMarkets, setCustomMarkets } = useCustomMarkets();
   const [thisMarket, setThisMarket] = useState<Market>();
   const [loaded, setLoaded] = useState(false);
 
-  const doSellNFT = async () => {
-    console.log('ok lets sell nft');
+  useEffect(() => {
+    console.log('minter page sees customMarkets', customMarkets);
+  }, [customMarkets]);
+
+  const onAddCustomMarket = (customMarket) => {
+    const marketInfo = getMarketInfos(customMarkets).some(
+      (m) => m.address.toBase58() === customMarket.address,
+    );
+    if (marketInfo) {
+      notify({
+        message: `A market with the given ID already exists`,
+        type: 'error',
+      });
+      return;
+    }
+    const newCustomMarkets = [...customMarkets, customMarket];
+    console.log('setting newCustomMarkets', newCustomMarkets);
+    setCustomMarkets(newCustomMarkets);
+    setMarketAddress(customMarket.address);
   };
 
   const loadData = useCallback(async () => {
-    if (!thisMarket) return;
-    const asks: Orderbook = await thisMarket.loadAsks(connection);
+    console.log('market is:', market);
+    if (!market) return;
+    console.log('Loading market data...');
+
+    const asks: Orderbook = await market.loadAsks(connection);
     console.log('Asks:', asks);
 
-    const bids: Orderbook = await thisMarket.loadBids(connection);
+    const bids: Orderbook = await market.loadBids(connection);
     console.log('Bids:', bids);
 
-    const events: Event[] = await thisMarket.loadEventQueue(connection);
+    const events: Event[] = await market.loadEventQueue(connection);
     console.log('Events:', events);
 
-    const fills: any[] = await thisMarket.loadFills(connection);
+    const fills: any[] = await market.loadFills(connection);
     console.log('Fills:', fills);
 
     const orders: Order[] =
       wallet.publicKey &&
-      (await thisMarket.loadOrdersForOwner(connection, wallet.publicKey));
+      (await market.loadOrdersForOwner(connection, wallet.publicKey));
     console.log('Owner orders:', orders);
 
-    const requests: any[] = await thisMarket.loadRequestQueue(connection);
+    const requests: any[] = await market.loadRequestQueue(connection);
     console.log('Requests:', requests);
 
     setLoaded(true);
-  }, [connection, thisMarket, wallet.publicKey]);
+    // setMarketAddress('3GhEPcAb17nDxuYVSdRaT2JbBNHmSioqPoStPbpZvnyj');
+  }, [connection, market, wallet.publicKey]);
 
   useEffect(() => {
     loadData();
-  }, [loadData, thisMarket]);
+  }, [loadData, market]);
 
   const doViewMarket = async () => {
     const marketInfo: MarketInfo = {
@@ -80,21 +116,23 @@ export default function MinterPage() {
       programId: marketInfo.programId.toString(),
     };
 
-    setCustomMarkets([customMarketInfo]);
+    onAddCustomMarket(customMarketInfo);
 
-    Market.load(connection, marketInfo.address, {}, marketInfo.programId)
-      .then((market: Market) => {
-        console.log('Loaded market:', market);
-        setThisMarket(market);
-        // console.log('setCustomMarkets successful');
-      })
-      .catch((e) =>
-        notify({
-          message: 'Error loading market',
-          description: e.message,
-          type: 'error',
-        }),
-      );
+    // setCustomMarkets([customMarketInfo]);
+
+    // Market.load(connection, marketInfo.address, {}, marketInfo.programId)
+    //   .then((market: Market) => {
+    //     console.log('Loaded market:', market);
+    //     setThisMarket(market);
+    //     // console.log('setCustomMarkets successful');
+    //   })
+    //   .catch((e) =>
+    //     notify({
+    //       message: 'Error loading market',
+    //       description: e.message,
+    //       type: 'error',
+    //     }),
+    //   );
   };
 
   const doListMarket = async () => {
@@ -194,17 +232,26 @@ export default function MinterPage() {
             onClick={doViewMarket}
             style={{ marginLeft: 20 }}
           >
-            Load market
+            Add custom market
           </ActionButton>
-          {loaded && (
-            <ActionButton
-              size="large"
-              onClick={doSellNFT}
-              style={{ marginLeft: 20 }}
-            >
-              Sell NFT
-            </ActionButton>
-          )}
+          <ActionButton
+            size="large"
+            onClick={loadData}
+            style={{ marginLeft: 20 }}
+          >
+            Load market data
+          </ActionButton>
+          <ActionButton
+            size="large"
+            onClick={() =>
+              setMarketAddress('3GhEPcAb17nDxuYVSdRaT2JbBNHmSioqPoStPbpZvnyj')
+            }
+            style={{ marginLeft: 20 }}
+          >
+            Set current market
+          </ActionButton>
+
+          {market && <SellNFT />}
         </TabPane>
       </Tabs>
     </FloatingElement>
