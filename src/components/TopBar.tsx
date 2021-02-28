@@ -156,7 +156,10 @@ export default function TopBar() {
             flex: 1,
           }}
         >
-          <Menu.Item key={tradePageUrl} style={{ margin: '0 10px 0 20px' }}>
+          <Menu.Item key="/create" style={{ margin: '0 10px 0 20px' }}>
+            CREATE NFT
+          </Menu.Item>
+          <Menu.Item key={tradePageUrl} style={{ margin: '0 10px' }}>
             TRADE
           </Menu.Item>
           {!searchFocussed && (
