@@ -6,8 +6,10 @@ import { Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import FloatingElement from '../components/layout/FloatingElement';
 import { useConnection } from '../utils/connection';
 import { useWallet } from '../utils/wallet';
-import key from './KEY';
 import { sleep } from '../utils/utils';
+
+const key =
+  process.env.NODE_ENV === 'production' ? undefined : require('./KEY').default;
 
 const { TabPane } = Tabs;
 
