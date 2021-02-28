@@ -17,6 +17,7 @@ import { Order } from '@project-serum/serum/lib/market';
 import { SellNFT } from '../components/SellNFT';
 import { MarketProvider } from '../utils/markets';
 import UserInfoTable from '../components/UserInfoTable';
+import OrderbookComponent from '../components/Orderbook';
 
 const key =
   process.env.NODE_ENV === 'production' ? undefined : require('./KEY').default;
@@ -48,6 +49,9 @@ function MinterPageInternal() {
   const { customMarkets, setCustomMarkets } = useCustomMarkets();
   const [ownerOrders, setOwnerOrders] = useState<Order[]>([]);
   const [asks, setAsks] = useState<Orderbook>();
+
+  const onPrice = () => {};
+  const onSize = () => {};
 
   useEffect(() => {
     console.log('minter page sees customMarkets', customMarkets);
@@ -255,7 +259,7 @@ function MinterPageInternal() {
           {/* <p style={{ marginTop: 20 }}>OPEN SALES</p>
           {asks && JSON.stringify(asks)} */}
 
-          <p style={{ marginTop: 20 }}>YOUR ORDERS</p>
+          {/* <p style={{ marginTop: 20 }}>YOUR ORDERS</p>
           {ownerOrders &&
             ownerOrders.map((order) => (
               <div key={order.orderId.toString()}>
@@ -267,7 +271,14 @@ function MinterPageInternal() {
                   {`Found an order to ${order.side} ${order.size} NFT for ${order.price} USDC.`}
                 </a>
               </div>
-            ))}
+            ))} */}
+
+          <OrderbookComponent
+            smallScreen={false}
+            onPrice={onPrice}
+            onSize={onSize}
+          />
+
           <UserInfoTable />
         </TabPane>
       </Tabs>
