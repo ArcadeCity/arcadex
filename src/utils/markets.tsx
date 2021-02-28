@@ -51,7 +51,18 @@ export const USE_MARKETS: MarketInfo[] = _IGNORE_DEPRECATED
   : MARKETS;
 
 export function useMarketsList() {
-  return USE_MARKETS.filter(({ deprecated }) => !deprecated);
+  const list = USE_MARKETS.filter(({ deprecated }) => !deprecated);
+
+  list.push({
+    address: new PublicKey('3GhEPcAb17nDxuYVSdRaT2JbBNHmSioqPoStPbpZvnyj'),
+    name: 'AAAA/USDC',
+    programId: new PublicKey('EUqojwWA2rd19FZrzeBncJsm38Jm1hEhE3zsmX3bRc2o'),
+    deprecated: false,
+  });
+
+  // console.log('yeah lets use this markets list:', list);
+
+  return list;
 }
 
 export function useAllMarkets() {
@@ -970,6 +981,7 @@ export function useUnmigratedDeprecatedMarkets() {
       return null;
     }
     const getMarket = async (address) => {
+      console.log('so address and lets...', address);
       const marketInfo = USE_MARKETS.find((market) =>
         market.address.equals(address),
       );
