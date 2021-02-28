@@ -31,6 +31,11 @@ export default function MinterPage() {
   const { wallet } = useWallet();
   const { setCustomMarkets } = useCustomMarkets();
   const [thisMarket, setThisMarket] = useState<Market>();
+  const [loaded, setLoaded] = useState(false);
+
+  const doSellNFT = async () => {
+    console.log('ok lets sell nft');
+  };
 
   const loadData = useCallback(async () => {
     if (!thisMarket) return;
@@ -53,6 +58,8 @@ export default function MinterPage() {
 
     const requests: any[] = await thisMarket.loadRequestQueue(connection);
     console.log('Requests:', requests);
+
+    setLoaded(true);
   }, [connection, thisMarket, wallet.publicKey]);
 
   useEffect(() => {
@@ -187,8 +194,17 @@ export default function MinterPage() {
             onClick={doViewMarket}
             style={{ marginLeft: 20 }}
           >
-            View market
+            Load market
           </ActionButton>
+          {loaded && (
+            <ActionButton
+              size="large"
+              onClick={doSellNFT}
+              style={{ marginLeft: 20 }}
+            >
+              Sell NFT
+            </ActionButton>
+          )}
         </TabPane>
       </Tabs>
     </FloatingElement>
