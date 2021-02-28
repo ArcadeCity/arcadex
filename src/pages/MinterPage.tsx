@@ -1,15 +1,19 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Button, Tabs } from 'antd';
 import { notify } from '../utils/notifications';
 import { Account, PublicKey } from '@solana/web3.js';
 import { Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { MARKETS } from '@project-serum/serum';
+import { Market, MARKETS, Orderbook } from '@project-serum/serum';
 import FloatingElement from '../components/layout/FloatingElement';
 import { useConnection } from '../utils/connection';
 import { useWallet } from '../utils/wallet';
 import { sleep } from '../utils/utils';
 import { listMarket } from '../utils/send';
+import { CustomMarketInfo, MarketInfo } from '../utils/types';
+import { useCustomMarkets } from '../utils/markets';
+import { Event } from '@project-serum/serum/lib/queue';
+import { Order } from '@project-serum/serum/lib/market';
 
 const key =
   process.env.NODE_ENV === 'production' ? undefined : require('./KEY').default;
@@ -25,6 +29,66 @@ const ActionButton = styled(Button)`
 export default function MinterPage() {
   const connection = useConnection();
   const { wallet } = useWallet();
+  const { setCustomMarkets } = useCustomMarkets();
+  const [thisMarket, setThisMarket] = useState<Market>();
+
+  const loadData = useCallback(async () => {
+    if (!thisMarket) return;
+    const asks: Orderbook = await thisMarket.loadAsks(connection);
+    console.log('Asks:', asks);
+
+    const bids: Orderbook = await thisMarket.loadBids(connection);
+    console.log('Bids:', bids);
+
+    const events: Event[] = await thisMarket.loadEventQueue(connection);
+    console.log('Events:', events);
+
+    const fills: any[] = await thisMarket.loadFills(connection);
+    console.log('Fills:', fills);
+
+    const orders: Order[] =
+      wallet.publicKey &&
+      (await thisMarket.loadOrdersForOwner(connection, wallet.publicKey));
+    console.log('Owner orders:', orders);
+
+    const requests: any[] = await thisMarket.loadRequestQueue(connection);
+    console.log('Requests:', requests);
+  }, [connection, thisMarket, wallet.publicKey]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData, thisMarket]);
+
+  const doViewMarket = async () => {
+    const marketInfo: MarketInfo = {
+      address: new PublicKey('3GhEPcAb17nDxuYVSdRaT2JbBNHmSioqPoStPbpZvnyj'),
+      name: 'AAAA/USDC',
+      programId: new PublicKey('EUqojwWA2rd19FZrzeBncJsm38Jm1hEhE3zsmX3bRc2o'),
+      deprecated: false,
+    };
+
+    const customMarketInfo: CustomMarketInfo = {
+      address: marketInfo.address.toString(),
+      name: 'AAAA/USDC',
+      programId: marketInfo.programId.toString(),
+    };
+
+    setCustomMarkets([customMarketInfo]);
+
+    Market.load(connection, marketInfo.address, {}, marketInfo.programId)
+      .then((market: Market) => {
+        console.log('Loaded market:', market);
+        setThisMarket(market);
+        // console.log('setCustomMarkets successful');
+      })
+      .catch((e) =>
+        notify({
+          message: 'Error loading market',
+          description: e.message,
+          type: 'error',
+        }),
+      );
+  };
 
   const doListMarket = async () => {
     // @ts-ignore
@@ -117,6 +181,13 @@ export default function MinterPage() {
             style={{ marginLeft: 20 }}
           >
             List market
+          </ActionButton>
+          <ActionButton
+            size="large"
+            onClick={doViewMarket}
+            style={{ marginLeft: 20 }}
+          >
+            View market
           </ActionButton>
         </TabPane>
       </Tabs>
