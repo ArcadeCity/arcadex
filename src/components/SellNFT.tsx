@@ -34,7 +34,7 @@ const ActionButton = styled(Button)`
 `;
 
 export const SellNFT = () => {
-  const [side, setSide] = useState<'buy' | 'sell'>('buy');
+  const [side, setSide] = useState<'buy' | 'sell'>('sell');
   const { baseCurrency, quoteCurrency, market } = useMarket();
   const baseCurrencyBalances = useSelectedBaseCurrencyBalances();
   const quoteCurrencyBalances = useSelectedQuoteCurrencyBalances();
@@ -254,21 +254,24 @@ export const SellNFT = () => {
 
   const doSellNFT = async () => {
     if (!market) return;
-    console.log('Placing order to sell NFT...');
+    const theorder: any = {
+      side,
+      price: price ?? 5,
+      size: baseSize ?? 1,
+      orderType: ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit',
+      market,
+      connection: sendConnection,
+      wallet,
+      baseCurrencyAccount: baseCurrencyAccount?.pubkey,
+      quoteCurrencyAccount: quoteCurrencyAccount?.pubkey,
+      feeDiscountPubkey: undefined, // feeDiscountKey,
+    };
+    console.log('Placing order to sell NFT...', theorder);
     try {
-      await placeOrder({
-        side,
-        price: price ?? 0,
-        size: baseSize ?? 1,
-        orderType: ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit',
-        market,
-        connection: sendConnection,
-        wallet,
-        baseCurrencyAccount: baseCurrencyAccount?.pubkey,
-        quoteCurrencyAccount: quoteCurrencyAccount?.pubkey,
-        feeDiscountPubkey: feeDiscountKey,
-      });
-    } catch (e) {}
+      await placeOrder(theorder);
+    } catch (e) {
+      console.log('Error:', e);
+    }
   };
 
   return (
