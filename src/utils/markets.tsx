@@ -196,7 +196,9 @@ export function getMarketDetails(
   market: Market | undefined | null,
   customMarkets: CustomMarketInfo[],
 ): FullMarketInfo {
+  // console.log('getting market details');
   if (!market) {
+    // console.log('returning empty');
     return {};
   }
   const marketInfos = getMarketInfos(customMarkets);
@@ -229,11 +231,20 @@ export function useCustomMarkets() {
   const [customMarkets, setCustomMarkets] = useLocalStorageState<
     CustomMarketInfo[]
   >('customMarkets', []);
+  // console.log('we do have setCustomMarkets', setCustomMarkets);
+  // const [customMarkets, setCustomMarkets] = useState<CustomMarketInfo[]>([]);
+  // console.log('customMarkets?:', customMarkets);
   return { customMarkets, setCustomMarkets };
 }
 
 export function MarketProvider({ marketAddress, setMarketAddress, children }) {
   const { customMarkets, setCustomMarkets } = useCustomMarkets();
+  // console.log('provider sees', marketAddress);
+  // console.log('and customMarkets', customMarkets);
+
+  // useEffect(() => {
+  //   console.log('PROVIDER SEES customMarkets', customMarkets);
+  // }, [customMarkets, marketAddress]);
 
   const address = marketAddress && new PublicKey(marketAddress);
   const connection = useConnection();
@@ -264,13 +275,15 @@ export function MarketProvider({ marketAddress, setMarketAddress, children }) {
     }
     setMarket(null);
     if (!marketInfo || !marketInfo.address) {
-      notify({
-        message: 'Error loading market',
-        description: 'Please select a market from the dropdown',
-        type: 'error',
-      });
+      // notify({
+      //   message: 'Error loading market',
+      //   description: 'Please select a market from the dropdown',
+      //   type: 'error',
+      // });
+      console.log('Market not loaded');
       return;
     }
+    console.log('Loading market...');
     Market.load(connection, marketInfo.address, {}, marketInfo.programId)
       .then(setMarket)
       .catch((e) =>
@@ -281,7 +294,7 @@ export function MarketProvider({ marketAddress, setMarketAddress, children }) {
         }),
       );
     // eslint-disable-next-line
-  }, [connection, marketInfo]);
+  }, [connection, marketInfo, customMarkets]);
 
   return (
     <MarketContext.Provider

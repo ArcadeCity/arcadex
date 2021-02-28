@@ -73,7 +73,7 @@ export function useLocalStorageStringState(
   key: string,
   defaultState: string | null = null,
 ): [string | null, (newState: string | null) => void] {
-  const state = localStorage.getItem('154' + key) || defaultState;
+  const state = localStorage.getItem(key) || defaultState;
 
   const [, notify] = useState(key + '\n' + state);
 
@@ -122,6 +122,7 @@ export function useLocalStorageState<T = any>(
     key,
     JSON.stringify(defaultState),
   );
+  // console.log(`${key} stringState:`, stringState && JSON.parse(stringState));
   return [
     useMemo(() => stringState && JSON.parse(stringState), [stringState]),
     (newState) => setStringState(JSON.stringify(newState)),
