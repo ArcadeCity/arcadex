@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+/* eslint-disable */
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Button } from 'antd';
-import { useConnection } from '../utils/connection';
 import {
   useSelectedBaseCurrencyBalances,
   useSelectedQuoteCurrencyBalances,
@@ -14,18 +14,17 @@ import {
   useLocallyStoredFeeDiscountKey,
 } from '../utils/markets';
 import { useWallet } from '../utils/wallet';
-import { notify } from '../utils/notifications';
+// import { notify } from '../utils/notifications';
 import {
   getDecimalCount,
   roundToDecimal,
   floorToDecimal,
 } from '../utils/utils';
 import { useSendConnection } from '../utils/connection';
-import FloatingElement from './layout/FloatingElement';
 import { getUnixTs, placeOrder } from '../utils/send';
-import { SwitchChangeEventHandler } from 'antd/es/switch';
-import { refreshCache } from '../utils/fetch-loop';
-import tuple from 'immutable-tuple';
+// import { SwitchChangeEventHandler } from 'antd/es/switch';
+// import { refreshCache } from '../utils/fetch-loop';
+// import tuple from 'immutable-tuple';
 
 const ActionButton = styled(Button)`
   color: #2abdd2;
@@ -145,18 +144,18 @@ export const SellNFT = () => {
     setBaseSize(baseSize);
   };
 
-  const doChangeOrder = ({
-    size,
-    price,
-  }: {
-    size?: number;
-    price?: number;
-  }) => {
-    const formattedSize = size && roundToDecimal(size, sizeDecimalCount);
-    const formattedPrice = price && roundToDecimal(price, priceDecimalCount);
-    formattedSize && onSetBaseSize(formattedSize);
-    formattedPrice && setPrice(formattedPrice);
-  };
+  // const doChangeOrder = ({
+  //   size,
+  //   price,
+  // }: {
+  //   size?: number;
+  //   price?: number;
+  // }) => {
+  //   const formattedSize = size && roundToDecimal(size, sizeDecimalCount);
+  //   const formattedPrice = price && roundToDecimal(price, priceDecimalCount);
+  //   formattedSize && onSetBaseSize(formattedSize);
+  //   formattedPrice && setPrice(formattedPrice);
+  // };
 
   const updateSizeFraction = () => {
     const rawMaxSize =
@@ -193,64 +192,64 @@ export const SellNFT = () => {
     onSetBaseSize(formatted);
   };
 
-  const postOnChange: SwitchChangeEventHandler = (checked) => {
-    if (checked) {
-      setIoc(false);
-    }
-    setPostOnly(checked);
-  };
-  const iocOnChange: SwitchChangeEventHandler = (checked) => {
-    if (checked) {
-      setPostOnly(false);
-    }
-    setIoc(checked);
-  };
+  // const postOnChange: SwitchChangeEventHandler = (checked) => {
+  //   if (checked) {
+  //     setIoc(false);
+  //   }
+  //   setPostOnly(checked);
+  // };
+  // const iocOnChange: SwitchChangeEventHandler = (checked) => {
+  //   if (checked) {
+  //     setPostOnly(false);
+  //   }
+  //   setIoc(checked);
+  // };
 
-  async function onSubmit() {
-    if (!price) {
-      console.warn('Missing price');
-      notify({
-        message: 'Missing price',
-        type: 'error',
-      });
-      return;
-    } else if (!baseSize) {
-      console.warn('Missing size');
-      notify({
-        message: 'Missing size',
-        type: 'error',
-      });
-      return;
-    }
+  // async function onSubmit() {
+  //   if (!price) {
+  //     console.warn('Missing price');
+  //     notify({
+  //       message: 'Missing price',
+  //       type: 'error',
+  //     });
+  //     return;
+  //   } else if (!baseSize) {
+  //     console.warn('Missing size');
+  //     notify({
+  //       message: 'Missing size',
+  //       type: 'error',
+  //     });
+  //     return;
+  //   }
 
-    setSubmitting(true);
-    try {
-      await placeOrder({
-        side,
-        price,
-        size: baseSize,
-        orderType: ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit',
-        market,
-        connection: sendConnection,
-        wallet,
-        baseCurrencyAccount: baseCurrencyAccount?.pubkey,
-        quoteCurrencyAccount: quoteCurrencyAccount?.pubkey,
-        feeDiscountPubkey: feeDiscountKey,
-      });
-      refreshCache(tuple('getTokenAccounts', wallet, connected));
-      setPrice(undefined);
-      onSetBaseSize(undefined);
-    } catch (e) {
-      console.warn(e);
-      notify({
-        message: 'Error placing order',
-        description: e.message,
-        type: 'error',
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  }
+  //   setSubmitting(true);
+  //   try {
+  //     await placeOrder({
+  //       side,
+  //       price,
+  //       size: baseSize,
+  //       orderType: ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit',
+  //       market,
+  //       connection: sendConnection,
+  //       wallet,
+  //       baseCurrencyAccount: baseCurrencyAccount?.pubkey,
+  //       quoteCurrencyAccount: quoteCurrencyAccount?.pubkey,
+  //       feeDiscountPubkey: feeDiscountKey,
+  //     });
+  //     refreshCache(tuple('getTokenAccounts', wallet, connected));
+  //     setPrice(undefined);
+  //     onSetBaseSize(undefined);
+  //   } catch (e) {
+  //     console.warn(e);
+  //     notify({
+  //       message: 'Error placing order',
+  //       description: e.message,
+  //       type: 'error',
+  //     });
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // }
 
   const doSellNFT = async () => {
     if (!market) return;
