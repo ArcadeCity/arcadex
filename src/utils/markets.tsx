@@ -852,7 +852,7 @@ export const useAllOpenOrders = (): {
       };
       getAllOpenOrders();
     }
-  }, [connected, wallet, refresh]);
+  }, [connected, wallet, refresh, connection]);
   return {
     openOrders: openOrders,
     loaded: loaded,
