@@ -45,6 +45,7 @@ function MinterPageInternal() {
   const { wallet } = useWallet();
   const { market, setMarketAddress } = useMarket();
   const { customMarkets, setCustomMarkets } = useCustomMarkets();
+  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     console.log('minter page sees customMarkets', customMarkets);
@@ -88,6 +89,7 @@ function MinterPageInternal() {
       wallet.publicKey &&
       (await market.loadOrdersForOwner(connection, wallet.publicKey));
     console.log('Owner orders:', orders);
+    setOrders(orders);
 
     const requests: any[] = await market.loadRequestQueue(connection);
     console.log('Requests:', requests);
@@ -213,7 +215,6 @@ function MinterPageInternal() {
     <FloatingElement style={{ flex: 1, paddingTop: 10, margin: 60 }}>
       <Tabs defaultActiveKey="createNFT">
         <TabPane tab="Create your NFT" key="createNFT">
-          <p>Let's create your first NFT.</p>
           <ActionButton size="large" onClick={mintNFT}>
             Create NFT
           </ActionButton>
@@ -247,8 +248,20 @@ function MinterPageInternal() {
           >
             Set current market
           </ActionButton>
-
           {market && <SellNFT />}
+          <p style={{ marginTop: 20 }}>YOUR ORDERS</p>
+          {orders &&
+            orders.map((order) => (
+              <div key={order.orderId.toString()}>
+                <a
+                  href={`https://explorer.solana.com/address/${order.openOrdersAddress.toString()}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {`Found an order to ${order.side} ${order.size} NFT for ${order.price} USDC.`}
+                </a>
+              </div>
+            ))}
         </TabPane>
       </Tabs>
     </FloatingElement>
