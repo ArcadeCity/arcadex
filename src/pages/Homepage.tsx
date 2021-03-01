@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { ArcadeUI } from '@arcadecity/ui';
 import WalletConnect from '../components/WalletConnect';
+import { SkynetClient } from 'skynet-js';
+
+const client = new SkynetClient('https://siasky.net');
 
 const Homepage = () => {
   const [name, setName] = useState<string>('');
+  const [file, setFile] = useState<any>();
   const [imgPreview, setImgPreview] = useState<string>();
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const url = URL.createObjectURL(file);
+    setFile(file);
     setImgPreview(url);
   };
 
@@ -15,9 +20,20 @@ const Homepage = () => {
     setName(e.target.value);
   };
 
-  const submitNftForm = (e) => {
+  const submitNftForm = async (e) => {
     e.preventDefault();
-    console.log('welcome', name, imgPreview);
+    console.log('Uploading', name, file);
+    try {
+      // upload
+      const { skylink } = await client.uploadFile(file);
+      console.log(`Upload successful, skylink: ${skylink}`);
+
+      // download
+      await client.downloadFile(skylink);
+      console.log('Download successful');
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
