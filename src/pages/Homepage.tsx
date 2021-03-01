@@ -23,14 +23,34 @@ const Homepage = () => {
   const submitNftForm = async (e) => {
     e.preventDefault();
     console.log('Uploading', name, file);
+
     try {
       // upload
       const { skylink } = await client.uploadFile(file);
-      console.log(`Upload successful, skylink: ${skylink}`);
+      console.log(`Image upload successful, skylink: ${skylink}`);
 
-      // download
-      await client.downloadFile(skylink);
-      console.log('Download successful');
+      const metadata = {
+        name,
+        imageSkylink: skylink,
+        owner: 'insert-owner-pubkey-here',
+        timestamp: Date.now(),
+      };
+
+      //Convert JSON Array to string.
+      var json = JSON.stringify(metadata);
+
+      //Convert JSON string to BLOB.
+      const jsonarray = [json];
+      var blob1 = new Blob(jsonarray, { type: 'text/plain;charset=utf-8' });
+      const jsonfile = new File([blob1], 'metadata.json');
+
+      const { skylink: metadataSkylink } = await client.uploadFile(jsonfile);
+      console.log(
+        `Metadata file upload successful, skylink: ${metadataSkylink}`,
+      );
+
+      client.downloadFile(metadataSkylink);
+      console.log('Downloaded metadata');
     } catch (error) {
       console.log(error);
     }
