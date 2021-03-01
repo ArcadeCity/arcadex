@@ -3,10 +3,21 @@ import { ArcadeUI } from '@arcadecity/ui';
 import WalletConnect from '../components/WalletConnect';
 
 const Homepage = () => {
+  const [name, setName] = useState<string>('');
   const [imgPreview, setImgPreview] = useState<string>();
   const handleFileChange = (event) => {
-    const url = URL.createObjectURL(event.target.files[0]);
+    const file = event.target.files[0];
+    const url = URL.createObjectURL(file);
     setImgPreview(url);
+  };
+
+  const onChangeName = (e) => {
+    setName(e.target.value);
+  };
+
+  const submitNftForm = (e) => {
+    e.preventDefault();
+    console.log('welcome', name, imgPreview);
   };
 
   return (
@@ -20,9 +31,15 @@ const Homepage = () => {
         <h5 style={space}>Step 1 - Connect a SOL wallet</h5>
         <WalletConnect />
 
-        <form>
+        <form onSubmit={submitNftForm}>
           <h5 style={space}>Step 2 - Create your NFT</h5>
-          <input style={{ width: 250 }} placeholder="Name it" />
+          <input
+            type="text"
+            style={{ width: 250 }}
+            placeholder="Name it"
+            value={name}
+            onChange={onChangeName}
+          />
           <input
             type="file"
             style={{ marginTop: 25, width: 250 }}
@@ -32,7 +49,9 @@ const Homepage = () => {
             Create NFT
           </button>
           <div style={{ marginTop: 10 }}>
-            <img src={imgPreview} style={{ border: 'none' }} />
+            {imgPreview && (
+              <img alt="Preview" src={imgPreview} style={{ border: 'none' }} />
+            )}
           </div>
         </form>
 
