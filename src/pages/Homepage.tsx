@@ -1,61 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ArcadeUI } from '@arcadecity/ui';
 import WalletConnect from '../components/WalletConnect';
-import { SkynetClient } from 'skynet-js';
-
-const client = new SkynetClient('https://siasky.net');
+import { CreateYourNFT } from '../components/CreateYourNFT';
 
 const Homepage = () => {
-  const [name, setName] = useState<string>('');
-  const [file, setFile] = useState<any>();
-  const [imgPreview, setImgPreview] = useState<string>();
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    const url = URL.createObjectURL(file);
-    setFile(file);
-    setImgPreview(url);
-  };
-
-  const onChangeName = (e) => {
-    setName(e.target.value);
-  };
-
-  const submitNftForm = async (e) => {
-    e.preventDefault();
-    console.log('Uploading', name, file);
-
-    try {
-      // upload
-      const { skylink } = await client.uploadFile(file);
-      console.log(`Image upload successful, skylink: ${skylink}`);
-
-      const metadata = {
-        name,
-        imageSkylink: skylink,
-        owner: 'insert-owner-pubkey-here',
-        timestamp: Date.now(),
-      };
-
-      //Convert JSON Array to string.
-      var json = JSON.stringify(metadata);
-
-      //Convert JSON string to BLOB.
-      const jsonarray = [json];
-      var blob1 = new Blob(jsonarray, { type: 'text/plain;charset=utf-8' });
-      const jsonfile = new File([blob1], 'metadata.json');
-
-      const { skylink: metadataSkylink } = await client.uploadFile(jsonfile);
-      console.log(
-        `Metadata file upload successful, skylink: ${metadataSkylink}`,
-      );
-
-      client.downloadFile(metadataSkylink);
-      console.log('Downloaded metadata');
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
     <ArcadeUI>
       <div style={{ margin: 80 }}>
@@ -67,29 +15,7 @@ const Homepage = () => {
         <h5 style={space}>Step 1 - Connect a SOL wallet</h5>
         <WalletConnect />
 
-        <form onSubmit={submitNftForm}>
-          <h5 style={space}>Step 2 - Create your NFT</h5>
-          <input
-            type="text"
-            style={{ width: 250 }}
-            placeholder="Name it"
-            value={name}
-            onChange={onChangeName}
-          />
-          <input
-            type="file"
-            style={{ marginTop: 25, width: 250 }}
-            onChange={handleFileChange}
-          />
-          <button type="submit" style={{ marginLeft: 15, marginTop: 25 }}>
-            Create NFT
-          </button>
-          <div style={{ marginTop: 10 }}>
-            {imgPreview && (
-              <img alt="Preview" src={imgPreview} style={{ border: 'none' }} />
-            )}
-          </div>
-        </form>
+        <CreateYourNFT />
 
         <h5 style={space}>Step 3 - List it for sale</h5>
         <input style={{ width: 150 }} placeholder="Quantity to list" />
@@ -107,4 +33,4 @@ const Homepage = () => {
 
 export default Homepage;
 
-const space = { marginTop: 75 };
+export const space = { marginTop: 75 };
