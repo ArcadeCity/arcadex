@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArcadeUI } from '@arcadecity/ui';
 import WalletConnect from '../components/WalletConnect';
 
 const Homepage = () => {
+  const [imgPreview, setImgPreview] = useState<string>();
+  const handleFileChange = (event) => {
+    const url = URL.createObjectURL(event.target.files[0]);
+    setImgPreview(url);
+  };
+
   return (
     <ArcadeUI>
       <div style={{ margin: 80 }}>
@@ -13,16 +19,22 @@ const Homepage = () => {
         <p>No middle-man, all decentralized.</p>
         <h5 style={space}>Step 1 - Connect a SOL wallet</h5>
         <WalletConnect />
-        <h5 style={space}>Step 2 - Create your NFT</h5>
-        <input style={{ width: 250 }} placeholder="Name it" />
-        {/* <input
-          style={{ width: 350, marginTop: 20 }}
-          placeholder="Describe it"
-        /> */}
-        <button style={{ marginTop: 25 }}>Add image</button>
-        <button disabled style={{ marginLeft: 15, marginTop: 25 }}>
-          Create NFT
-        </button>
+
+        <form>
+          <h5 style={space}>Step 2 - Create your NFT</h5>
+          <input style={{ width: 250 }} placeholder="Name it" />
+          <input
+            type="file"
+            style={{ marginTop: 25, width: 250 }}
+            onChange={handleFileChange}
+          />
+          <button type="submit" style={{ marginLeft: 15, marginTop: 25 }}>
+            Create NFT
+          </button>
+          <div style={{ marginTop: 10 }}>
+            <img src={imgPreview} style={{ border: 'none' }} />
+          </div>
+        </form>
 
         <h5 style={space}>Step 3 - List it for sale</h5>
         <input style={{ width: 150 }} placeholder="Quantity to list" />
