@@ -14,10 +14,25 @@ const Homepage = () => {
         <h5 style={space}>Step 1 - Connect a SOL wallet</h5>
         <WalletConnect />
         <h5 style={space}>Step 2 - Create your NFT</h5>
+        <input style={{ width: 250 }} placeholder="Name it" />
+        {/* <input
+          style={{ width: 350, marginTop: 20 }}
+          placeholder="Describe it"
+        /> */}
+        <button style={{ marginTop: 25 }}>Add image</button>
+        <button disabled style={{ marginLeft: 15, marginTop: 25 }}>
+          Create NFT
+        </button>
+
         <h5 style={space}>Step 3 - List it for sale</h5>
-        <p>Quantity to list:</p>
-        <p>Price:</p>
-        <button>List it</button>
+        <input style={{ width: 150 }} placeholder="Quantity to list" />
+        <input
+          style={{ width: 150, marginTop: 20 }}
+          placeholder="Price in USDC"
+        />
+        <button disabled style={{ marginTop: 25 }}>
+          List it
+        </button>
       </div>
     </ArcadeUI>
   );
@@ -25,4 +40,4 @@ const Homepage = () => {
 
 export default Homepage;
 
-const space = { marginTop: 55 };
+const space = { marginTop: 75 };
