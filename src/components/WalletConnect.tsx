@@ -25,7 +25,7 @@ export default function WalletConnect() {
           title="Wallet public key"
           trigger="click"
         >
-          <InfoCircleOutlined style={{ color: '#2abdd2' }} />
+          <InfoCircleOutlined style={{ marginLeft: 15, color: '#2abdd2' }} />
         </Popover>
       )}
     </React.Fragment>

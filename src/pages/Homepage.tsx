@@ -1,8 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArcadeUI } from '@arcadecity/ui';
 import WalletConnect from '../components/WalletConnect';
+import { SkynetClient } from 'skynet-js';
+
+const client = new SkynetClient('https://siasky.net');
 
 const Homepage = () => {
+  const [name, setName] = useState<string>('');
+  const [file, setFile] = useState<any>();
+  const [imgPreview, setImgPreview] = useState<string>();
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    const url = URL.createObjectURL(file);
+    setFile(file);
+    setImgPreview(url);
+  };
+
+  const onChangeName = (e) => {
+    setName(e.target.value);
+  };
+
+  const submitNftForm = async (e) => {
+    e.preventDefault();
+    console.log('Uploading', name, file);
+    try {
+      // upload
+      const { skylink } = await client.uploadFile(file);
+      console.log(`Upload successful, skylink: ${skylink}`);
+
+      // download
+      await client.downloadFile(skylink);
+      console.log('Download successful');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <ArcadeUI>
       <div style={{ margin: 80 }}>
@@ -13,11 +46,40 @@ const Homepage = () => {
         <p>No middle-man, all decentralized.</p>
         <h5 style={space}>Step 1 - Connect a SOL wallet</h5>
         <WalletConnect />
-        <h5 style={space}>Step 2 - Create your NFT</h5>
+
+        <form onSubmit={submitNftForm}>
+          <h5 style={space}>Step 2 - Create your NFT</h5>
+          <input
+            type="text"
+            style={{ width: 250 }}
+            placeholder="Name it"
+            value={name}
+            onChange={onChangeName}
+          />
+          <input
+            type="file"
+            style={{ marginTop: 25, width: 250 }}
+            onChange={handleFileChange}
+          />
+          <button type="submit" style={{ marginLeft: 15, marginTop: 25 }}>
+            Create NFT
+          </button>
+          <div style={{ marginTop: 10 }}>
+            {imgPreview && (
+              <img alt="Preview" src={imgPreview} style={{ border: 'none' }} />
+            )}
+          </div>
+        </form>
+
         <h5 style={space}>Step 3 - List it for sale</h5>
-        <p>Quantity to list:</p>
-        <p>Price:</p>
-        <button>List it</button>
+        <input style={{ width: 150 }} placeholder="Quantity to list" />
+        <input
+          style={{ width: 150, marginTop: 20 }}
+          placeholder="Price in USDC"
+        />
+        <button disabled style={{ marginTop: 25 }}>
+          List it
+        </button>
       </div>
     </ArcadeUI>
   );
@@ -25,4 +87,4 @@ const Homepage = () => {
 
 export default Homepage;
 
-const space = { marginTop: 55 };
+const space = { marginTop: 75 };
