@@ -14,7 +14,6 @@ export default function WalletConnect() {
         type="text"
         size="large"
         onClick={connected ? wallet.disconnect : wallet.connect}
-        style={{ color: '#2abdd2' }}
       >
         <UserOutlined />
         {!connected ? 'Connect wallet' : 'Disconnect'}
